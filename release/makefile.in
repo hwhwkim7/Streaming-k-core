@@ -1,0 +1,68 @@
+MODE=gcc
+OPT=yes
+DEBUG=no
+
+ifeq ($(MODE),gcc)
+# ------- LINUX ----------
+ccc = gcc
+CC        = gcc -std=c++11 -pthread
+CXX        = g++ -std=c++11 -pthread
+LD         = g++ -std=c++11 -pthread
+CFLAGS     = $(FLAGS) -Wstrict-prototypes 
+CXXFLAGS   = $(FLAGS)
+LDFLAGS    = $(FLAGS)
+endif
+
+ifeq ($(MODE),icc)
+# ------- LINUX ----------
+ccc        = icc
+CXX=icpc
+CFLAGS     =
+CXXFLAGS   =
+LDFLAGS    =
+LD=icpc
+endif
+
+ifeq ($(WARN),yes)
+FLAGS      = -Wall -W -Wextra
+endif
+
+ifeq ($(MODE),gcc) #remove pragma warning when compiled with gcc
+CFLAGS   += -Wno-unknown-pragmas
+CXXFLAGS += -Wno-unknown-pragmas
+endif
+
+ifeq ($(DEBUG),yes)
+CFLAGS    += -g -ggdb
+CXXFLAGS    += -g -ggdb
+LDFLAGS   += -g -ggdb
+endif
+
+ifeq ($(OPT),yes)
+CFLAGS    += -O3 -DNDEBUG
+CXXFLAGS    += -O3 -DNDEBUG
+LDFLAGS   += -DNDEBUG
+endif
+
+ifeq ($(MAINTAIN_CD), yes)
+CFLAGS    += -D MAINTAIN_CD
+CXXFLAGS    += -D MAINTAIN_CD
+endif
+
+AR         = ar rv
+RANLIB     = ranlib
+
+INC        = 
+LIBS       = -lm
+
+
+.SUFFIXES:
+.SUFFIXES: .o .cpp
+.SUFFIXES: .o .c
+
+
+.c.o: 
+	$(ccc) $(CFLAGS) $(INCLUDES) -c $*.c  
+
+.cpp.o: 
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $*.cpp  
